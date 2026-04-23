@@ -1037,5 +1037,8 @@ def luu_xe(
     </body>
     </html>
     """
+@app.get("/")
+def home():
+        return {"status": "ok"}
     
 
