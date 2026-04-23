@@ -573,40 +573,191 @@ def home():
 
 
 # ===== GIAO DIỆN =====
+from fastapi import FastAPI, Form
+from fastapi.responses import HTMLResponse
+
+
+
 @app.get("/quy-doi", response_class=HTMLResponse)
 def quy_doi():
     return """
     <html>
-    <body style="background:#111;color:white;text-align:center;padding-top:40px;font-family:Arial">
+    <head>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            font-family: Arial;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+        }
 
-    <h1>⛽ Quy đổi </h1>
+        .card {
+            display: inline-block;
+            padding: 30px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 300px;
+        }
 
-    <form action="/convert" method="post">
+        h1 {
+            margin-bottom: 20px;
+        }
 
-    <select name="mode">
-        <option value="h_to_v">Chiều cao → Thể tích</option>
-        <option value="v_to_h">Thể tích → Chiều cao</option>
-    </select>
+        select, input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+        }
 
-    <h3>Bể DO 0,05</h3>
-    <input name="value1">
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #00c6ff;
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+        }
 
-    <h3>Bể A95</h3>
-    <input name="value2">
+        button:hover {
+            background: #0072ff;
+        }
 
-    <h3>Bể DO 0,001</h3>
-    <input name="value3">
+        .back {
+            display: block;
+            margin-top: 20px;
+            color: orange;
+            text-decoration: none;
+        }
 
-    <br><br>
-    <button type="submit">Tính</button>
+        .back:hover {
+            text-decoration: underline;
+        }
 
-    <br><br>
-    <a href="/" style="color:orange">← Trang chính</a>
+        .label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+    </head>
 
-    </form>
+    <body>
+
+    <div class="card">
+        <h1>⛽ Quy đổi</h1>
+
+        <form action="/convert" method="post">
+
+            <select name="mode">
+                <option value="h_to_v">Chiều cao → Thể tích</option>
+                <option value="v_to_h">Thể tích → Chiều cao</option>
+            </select>
+
+            <div class="label">Bể DO 0,05</div>
+            <input name="value1" placeholder="Nhập giá trị...">
+
+            <div class="label">Bể A95</div>
+            <input name="value2" placeholder="Nhập giá trị...">
+
+            <div class="label">Bể DO 0,001</div>
+            <input name="value3" placeholder="Nhập giá trị...">
+
+            <button type="submit">Tính</button>
+
+        </form>
+
+        <a href="/" class="back">← Trang chính</a>
+    </div>
+
     </body>
     </html>
     """
+
+@app.post("/convert", response_class=HTMLResponse)
+def convert(
+    mode: str = Form(...),
+    value1: float = Form(0),
+    value2: float = Form(0),
+    value3: float = Form(0),
+):
+    table1 = tank_data["1"]
+    table2 = tank_data["2"]
+    table3 = tank_data["3"]
+
+    if mode == "h_to_v":
+        kq1 = h_to_v(value1, table1)
+        kq2 = h_to_v(value2, table2)
+        kq3 = h_to_v(value3, table3)
+    else:
+        kq1 = v_to_h(value1, table1)
+        kq2 = v_to_h(value2, table2)
+        kq3 = v_to_h(value3, table3)
+
+    return f"""
+    
+        <html>
+        <head>
+        <style>
+            body {{
+                background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+                font-family: Arial;
+                color: white;
+                text-align: center;
+                padding-top: 60px;
+            }}
+
+            .card {{
+                display: inline-block;
+                padding: 30px;
+                border-radius: 15px;
+                background: rgba(255,255,255,0.05);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            }}
+
+            h1 {{
+                margin-bottom: 25px;
+            }}
+
+            p {{
+                font-size: 18px;
+                        margin: 10px 0;
+                    }}
+
+            .back {{
+                display: inline-block;
+                margin-top: 20px;
+                color: orange;
+                text-decoration: none;
+            }}
+
+            .back:hover {{
+                text-decoration: underline;
+            }}
+        </style>
+        </head>
+
+        <body>
+
+        <div class="card">
+            <h1>⛽ Kết quả quy đổi</h1>
+
+            <p>Bể DO 0,05: {kq1:.2f} {"lít" if mode == "h_to_v" else "cm"}</p>
+            <p>Bể A95: {kq2:.2f} {"lít" if mode == "h_to_v" else "cm"}</p>
+            <p>Bể DO 0,001: {kq3:.2f} {"lít" if mode == "h_to_v" else "cm"}</p>
+
+            <a href="/quy-doi" class="back">← Quay lại</a>
+        </div>
+
+        </body>
+        </html>
+        """
 
 from fastapi import Request
 @app.api_route("/nhap-xe-tec", methods=["GET","POST"], response_class=HTMLResponse)
@@ -1037,8 +1188,7 @@ def luu_xe(
     </body>
     </html>
     """
-@app.get("/")
-def home():
-        return {"status": "ok"}
+
+
     
 
