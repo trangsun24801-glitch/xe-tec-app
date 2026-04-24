@@ -453,12 +453,21 @@ tank_data = {
 
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
-import sqlite3
+import psycopg2
+import os
 import json
 
-app = FastAPI()
+def get_conn():
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        raise Exception("❌ DATABASE_URL chưa được set!")
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    return psycopg2.connect(url)
+
+
 def init_db():
-    conn = sqlite3.connect("xe.db")
+    conn = get_conn()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -469,13 +478,10 @@ def init_db():
     )
     """)
 
-    cursor.execute("""
-    INSERT OR IGNORE INTO xe VALUES 
-    ('29C-997.56', 6.9,6.9,6.9,0,0, 27.5,27.5,27.5,0,0)
-    """)
-
     conn.commit()
     conn.close()
+
+init_db()
 init_db()
 
 
@@ -762,7 +768,7 @@ def convert(
 from fastapi import Request
 @app.api_route("/nhap-xe-tec", methods=["GET","POST"], response_class=HTMLResponse)
 async def xe_tec(request: Request):
-    conn = sqlite3.connect("xe.db")
+    conn = get_conn()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM xe")
@@ -1102,10 +1108,10 @@ async def xe_tec(request: Request):
     """
 @app.get("/xoa-xe", response_class=HTMLResponse)
 def xoa_xe(ten: str):
-    conn = sqlite3.connect("xe.db")
+    conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM xe WHERE ten_xe=?", (ten,))
+    cursor.execute("DELETE FROM xe WHERE ten_xe=%s", (ten,))
 
     conn.commit()
     conn.close()
@@ -1164,11 +1170,12 @@ def luu_xe(
     t1_xe: float = Form(0), t2_xe: float = Form(0), t3_xe: float = Form(0),
     t4_xe: float = Form(0), t5_xe: float = Form(0),
 ):
-    conn = sqlite3.connect("xe.db")
+    conn = conn = get_conn()
     cursor = conn.cursor()
 
     cursor.execute("""
-    INSERT INTO xe VALUES (?,?,?,?,?,?,?,?,?,?,?)
+    INSERT INTO xe VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    ON CONFLICT (ten_xe) DO NOTHING
     """, (ten_xe, h1, h2, h3, h4, h5, t1_xe, t2_xe, t3_xe, t4_xe, t5_xe))
 
     conn.commit()
