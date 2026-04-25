@@ -1182,7 +1182,12 @@ select option {{
             <h1>🚛 Nhập xe téc</h1>
 
             <a href="/them-xe" style="color:lime;">➕ Thêm xe</a>
-            <a id="xoaLink" href="#" style="color:red;margin-left:15px;" onclick="return confirm('Xóa xe này?')">🗑 Xóa</a>
+            <a id="xoaLink"
+               href="/xoa-xe?ten_xe={form_data.get('ten_xe','')}"
+               style="color:red;margin-left:15px;"
+               onclick="return confirm('Xóa xe này?')">
+                🗑 Xóa
+            </a>
 
             <form action="/nhap-xe-tec" method="post" onsubmit="daSubmit = true;">
 
@@ -1371,14 +1376,14 @@ window.onload = function() {{
     """
 from fastapi.responses import RedirectResponse
 
-@app.get("/xoa-xe")
+@app.get("/xoa-xe",response_class=HTMLResponse)
 def xoa_xe(ten_xe: str):
     conn = get_conn()
     cursor = conn.cursor()
 
-    if "postgres" in str(type(conn)):
+    try:
         cursor.execute("DELETE FROM xe WHERE ten_xe=%s", (ten_xe,))
-    else:
+    except:
         cursor.execute("DELETE FROM xe WHERE ten_xe=?", (ten_xe,))
 
     conn.commit()
