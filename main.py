@@ -618,6 +618,14 @@ body::after {
     transform: scale(1.2) rotate(5deg);
     transition: 0.3s;
 }
+.link-btn {
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+    color: orange;
+    font-size: 18px;
+    text-decoration: none;
+}
     </style>
     </head>
 
@@ -640,6 +648,9 @@ body::after {
     <div class="icon">🛢️</div>
     <div class="title">Chúng Tôi Có Gì?</div>
     <div class="desc">Danh sách sản phẩm</div>
+    </a>
+    <a href="/developer" class="link-btn">
+    Developed by →
     </a>
     
 
@@ -1732,6 +1743,27 @@ def san_pham():
     </body>
     </html>
     """
+from fastapi.responses import HTMLResponse
+
+@app.get("/developer", response_class=HTMLResponse)
+def developer():
+    return """
+    <html>
+    <body style="background:black;color:white;text-align:center;padding-top:80px;font-family:Arial">
+
+    <h1>👨‍💻 Developed by</h1>
+    <h2>Hai Dinh</h2>
+
+    <p>What program do you use?</p>
+    <p><i>*whispers*</i> ChatGPT</p>
+
+    <br>
+    <a href="/" style="color:orange">← Trang chính</a>
+
+    </body>
+    </html>
+    """
+
 
 
     
