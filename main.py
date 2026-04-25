@@ -720,33 +720,56 @@ def quy_doi():
             margin-top: 10px;
             font-weight: bold;
         }
+        /* tiêu đề chính */
+        .title-main {
+            color: #00eaff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.7);
+        }
+
+        /* cảnh báo */
+        .title-warning {
+            color: #ff4d4d;
+            text-shadow: 0 0 10px rgba(255,0,0,0.7);
+            font-weight: bold;
+        }
+
+        /* phụ */
+        .title-sub {
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
+        }
     </style>
     </head>
 
     <body>
 
     <div class="card">
-        <h1>⛽ Quy đổi</h1>
 
-        <form action="/convert" method="post">
+    <h1 class="title-main">⛽ Quy đổi</h1>
+    <h2 class="title-warning">áp dụng riêng CH29</h2>
+    <h3 class="title-sub">(Bình Gia - Lạng Sơn)</h3>
 
-            <select name="mode">
-                <option value="h_to_v">Chiều cao → Thể tích</option>
-                <option value="v_to_h">Thể tích → Chiều cao</option>
-            </select>
+    <form action="/convert" method="post">
 
-            <div class="label">Bể DO 0,05</div>
-            <input name="value1" placeholder="Nhập giá trị...">
+        <select name="mode">
+            <option value="h_to_v">Chiều cao → Thể tích</option>
+            <option value="v_to_h">Thể tích → Chiều cao</option>
+        </select>
 
-            <div class="label">Bể A95</div>
-            <input name="value2" placeholder="Nhập giá trị...">
+        <div class="label">Bể DO 0,05</div>
+        <input name="value1" placeholder="Nhập giá trị...">
 
-            <div class="label">Bể DO 0,001</div>
-            <input name="value3" placeholder="Nhập giá trị...">
+        <div class="label">Bể A95</div>
+        <input name="value2" placeholder="Nhập giá trị...">
 
-            <button type="submit">Tính</button>
+        <div class="label">Bể DO 0,001</div>
+        <input name="value3" placeholder="Nhập giá trị...">
+
+        <button type="submit">Tính</button>
 
         </form>
+
+        </div>
 
         <a href="/" class="back">← Trang chính</a>
 
