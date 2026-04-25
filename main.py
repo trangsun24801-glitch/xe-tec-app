@@ -512,51 +512,112 @@ def home():
     <head>
     <style>
         body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            font-family: Arial;
-            color: white;
-            text-align: center;
-            padding-top: 80px;
-        }
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: Arial;
+    color: white;
+    text-align: center;
+    padding-top: 80px;
+}
 
-        h1 {
-            font-size: 42px;
-            margin-bottom: 40px;
-        }
+/* title xịn hơn */
+/*h1 {
+    font-size: 42px;
+    margin-bottom: 40px;
+    background: linear-gradient(45deg, #00eaff, #00ff9d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}*/
 
-        .card {
-            display: inline-block;
-            width: 220px;
-            padding: 25px;
-            margin: 15px;
-            border-radius: 15px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
+/* card nâng cấp */
+.card {
+    display: inline-block;
+    width: 230px;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 20px;
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 0 30px rgba(0,255,150,0.4);
-        }
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
 
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
+    text-decoration: none;
+    color: white;
 
-        .title {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
+    transition: 0.3s;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
 
-        .desc {
-            font-size: 13px;
-            opacity: 0.7;
-        }
+/* hover xịn hơn */
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 0 30px #00eaff;
+}
+
+/* icon to hơn */
+.icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+/* title */
+.title {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+/* desc */
+.desc {
+    font-size: 14px;
+    opacity: 0.7;
+}
+/* ánh sáng nền */
+/*body::before {
+    content: "";
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,255,200,0.2), transparent);
+    top: -200px;
+    left: -200px;
+    z-index: -1;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,150,255,0.2), transparent);
+    bottom: -200px;
+    right: -200px;
+    z-index: -1;
+}*/
+
+/* ánh sáng chạy trên card */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
+    top: 0;
+    left: -100%;
+    transition: 0.5s;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+/* icon động */
+.card:hover .icon {
+    transform: scale(1.2) rotate(5deg);
+    transition: 0.3s;
+}
     </style>
     </head>
 
@@ -888,15 +949,15 @@ async def xe_tec(request: Request):
         <h2>📊 KẾT LUẬN</h2>
 
         <h3 style="color:{'lime' if final_a95 > 0 else 'red' if final_a95 < 0 else 'orange'}">
-        A95: {final_a95:.2f} ({ "THỪA" if final_a95 > 0 else "THIẾU" if final_a95 < 0 else "CHUẨN" })
+        A95: {final_a95:.2f} Lít --> ({ "THỪA" if final_a95 > 0 else "THIẾU" if final_a95 < 0 else "Đu Đủ" })
         </h3>
 
         <h3 style="color:{'lime' if final_do005 > 0 else 'red' if final_do005 < 0 else 'orange'}">
-        DO 0.05: {final_do005:.2f}
+        DO 0.05: {final_do005:.2f}  Lít --> ({"Thừa" if final_do005 > 0 else "Thiếu" if final_do005 < 0 else "Đủ Đu"})
         </h3>
 
         <h3 style="color:{'lime' if final_do0001 > 0 else 'red' if final_do0001 < 0 else 'orange'}">
-        DO 0.001: {final_do0001:.2f}
+        DO 0.001: {final_do0001:.2f} Lít -->({"Thừa" if final_do0001 > 0 else "Thiếu" if final_do0001 < 0 else "Đủ"})
         </h3>
         </div>
         """
@@ -917,224 +978,414 @@ async def xe_tec(request: Request):
 
         selected = "selected" if form_data.get("ten_xe") == ten else ""
         options += f'<option value="{ten}" {selected}>{ten}</option>'
+    import json
+    du_lieu_xe_json = json.dumps(du_lieu_xe)
 
     return f"""
     <html>
-   <body style="
-    background:#111;
-    font-family:Arial;
-    ">
-    <div style="
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    align-items:flex-start;
-    padding-top:1px;
-    ">
-    <div style="background:#1c1c1c;padding:10px;border-radius:8px;width:600px;color:white;margin-top:0px;box-shadow:0 0 20px rgba(0,0,0,0.5);">
-    
+    <head>
+    <style>
+    body {{
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: Arial;
+        margin: 0;
+        padding: 30px;
+        color: white;
+    }}
+  
+    select.input {{
+    min-width: 120px;
+    width: auto;
+    padding: 8px 35px 8px 10px;
+}}
+    .section {{
+    margin-top: 20px;
+    color: #00eaff;
+    font-weight: bold;
+}}
 
-    <h1 style="margin:0 0 5px 0;">🚛 Nhập xe téc</h1>
-    <div style="margin-bottom:5px;">
-    <a href="/them-xe" style="color:lime;margin-right:15px;">➕ Thêm xe</a>
-    
-    <a id="xoaLink" href="#" style="color:red;"
-    onclick="return confirm('Xóa xe này?')">🗑 Xóa</a>
-    </div>
-    
-    
-    
-    <script>
-    const duLieuXe = {json.dumps(du_lieu_xe)};
+.row {{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}}
 
-    // 👇 biến chặn không cho chạy lại sau khi POST
-    let daSubmit = false;
+.input {{
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    width: 90px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+}}
 
-    function chonXe(xe) {{
-        // ❌ nếu vừa submit xong thì không auto fill nữa
-        if (daSubmit) return;
+.input:focus {{
+    box-shadow: 0 0 8px #00eaff;
+}}
+    .section {{
+    margin-top: 20px;
+    color: #00eaff;
+    font-weight: bold;
+}}
 
-        const data = duLieuXe[xe];
-        if (!data) return;
+.label {{
+    font-weight: bold;
+    margin-right: 5px;
+}}
 
-        for (let key in data) {{
-            let input = document.getElementsByName(key)[0];
+/* màu từng loại xăng */
+.a95 {{
+    color: #ff4d4d;
+}}
 
-            // 👇 chỉ fill khi ô trống
-            if (input && input.value === "") {{
-                input.value = data[key];
-            }}
+.do005 {{
+    color: #00c6ff;
+}}
+
+.do0001 {{
+    color: #00ff9d;
+}}
+
+/* input đẹp hơn */
+.input {{
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    width: 90px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}}
+
+/* nút */
+.btn {{
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    color: white;
+    cursor: pointer;
+    margin-left: 10px;
+}}
+
+.btn:hover {{
+    transform: scale(1.05);
+}}
+
+        .main {{
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }}
 
-        document.getElementById("xoaLink").href = "/xoa-xe?ten=" + xe;
-    }}
-    </script>
+        .card {{
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            width: 700px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }}
+
+        .result {{
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            width: 300px;
+        }}
+
+        h1, h2, h3 {{
+            margin: 10px 0;
+        }}
+
+        .row {{
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }}
+
         
 
+            button:hover {{
+                background: #0072ff;
+            }}
+
+            .link {{
+                color: orange;
+                margin-top: 20px;
+                display: block;
+            }}
+            select.input {{
+    background: rgba(255,255,255,0.15);
+    color: white;
+    cursor: pointer;
+    border: 1px solid rgba(0,255,255,0.3);
+}}
+
+select.input:focus {{
+    border: 1px solid #00eaff;
+    box-shadow: 0 0 8px #00eaff;
+}}
+
+select option {{
+    background: #1e2f36;
+    color: white;
+}}
+select.input {{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(0,255,255,0.4);
+    border-radius: 10px;
+    padding: 8px 30px 8px 10px;
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    /* mũi tên đẹp */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><polygon points='0,5 10,15 20,5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+}}
+
+select.input:hover {{
+    border-color: #00eaff;
+}}
+
+select.input:focus {{
+    outline: none;
+    border-color: #00eaff;
+    box-shadow: 0 0 8px #00eaff;
+}}
+
+/* dropdown bên trong */
+select option {{
+    background: #1e2f36;
+    color: white;
+}}
+            </style>
+            </head>
+
+            <body>
+
+            <div class="main">
+
+            <div class="card">
+
+            <h1>🚛 Nhập xe téc</h1>
+
+            <a href="/them-xe" style="color:lime;">➕ Thêm xe</a>
+            <a id="xoaLink" href="#" style="color:red;margin-left:15px;" onclick="return confirm('Xóa xe này?')">🗑 Xóa</a>
+
+            <form action="/nhap-xe-tec" method="post" onsubmit="daSubmit = true;">
+
+            <h2>🚛 Chọn xe</h2>
+            <select class="input" name="ten_xe" onchange="chonXe(this.value)">
+            <option value="">-- Chọn xe --</option>
+            {options}
+            </select>
+
+                
     
-   
 
-    <form action="/nhap-xe-tec" method="post" onsubmit="daSubmit = true;">
-    <h2 style="margin:0 0 5px 0;">🚛 Chọn xe</h2>
-    <select name="ten_xe" onchange="chonXe(this.value)">
-    <option value="">-- Chọn xe --</option>
-    {options}
+    <h2 class="section">🛢️ Khoang 1</h2>
+<div class="row">
+    <input class="input" name="t1_xe" value="{form_data.get('t1_xe','')}" placeholder="Barem">
+    <input class="input" name="t1_ch" value="{form_data.get('t1_ch','')}" placeholder="CH Đo">
+    <input class="input" name="h1" value="{form_data.get('h1','')}" placeholder="Lít/Cm">
+    <input class="input" name="t1_du" value="{form_data.get('t1_du','')}" placeholder="Dư Hóa Đơn">
+
+    <select class="input fuel-select" name="fuel1" onchange="doiMau(this)">
+        <option value="a95" {"selected" if form_data.get("fuel1")=="a95" else ""}>Xăng RON95</option>
+        <option value="do005" {"selected" if form_data.get("fuel1")=="do005" else ""}>DO 0.05S-II</option>
+        <option value="do0001" {"selected" if form_data.get("fuel1")=="do0001" else ""}>DO 0.001S-V</option>
     </select>
-
-    <h3>Khoang 1</h3>
-    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
-
-    <input name="t1_xe"value="{form_data.get('t1_xe','')}" placeholder="Barem" style="width:80px">
-    <input name="t1_ch"value="{form_data.get('t1_ch','')}" placeholder="CH Đo" style="width:80px">
-    <input name="h1"value="{form_data.get('h1','')}" placeholder="Lít/Cm" style="width:80px">
-    <input name="t1_du"value="{form_data.get('t1_du','')}" placeholder="Dư Hóa Đơn" style="width:85px">
-
-    <select name="fuel1">
-    <option value="a95" {"selected" if form_data.get("fuel1")=="a95" else ""}>A95</option>
-    <option value="do005" {"selected" if form_data.get("fuel1")=="do005" else ""}>DO 0.05</option>
-    <option value="do0001" {"selected" if form_data.get("fuel1")=="do0001" else ""}>DO 0.001</option>
-    </select>
-    </div>
-    
-
-    <h3>Khoang 2</h3>
-    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
-
-    <input name="t2_xe"value="{form_data.get('t2_xe','')}" placeholder="Barem" style="width:80px">
-    <input name="t2_ch"value="{form_data.get('t2_ch','')}" placeholder="CH Đo" style="width:80px">
-    <input name="h2" value="{form_data.get('h2','')}"placeholder="Lít/Cm" style="width:80px">
-    <input name="t2_du"value="{form_data.get('t2_du','')}" placeholder="Dư Hóa Đơn" style="width:85px">
-
-    <select name="fuel2">
-       <option value="a95" {"selected" if form_data.get("fuel2")=="a95" else ""}>A95</option>
-    <option value="do005" {"selected" if form_data.get("fuel2")=="do005" else ""}>DO 0.05</option>
-    <option value="do0001" {"selected" if form_data.get("fuel2")=="do0001" else ""}>DO 0.001</option>
-    </select>
-
 </div>
 
-    <h3>Khoang 3</h3>
-    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
+<h2 class="section">🛢️ Khoang 2</h2>
+<div class="row">
+    <input class="input" name="t2_xe" value="{form_data.get('t2_xe','')}" placeholder="Barem">
+    <input class="input" name="t2_ch" value="{form_data.get('t2_ch','')}" placeholder="CH Đo">
+    <input class="input" name="h2" value="{form_data.get('h2','')}" placeholder="Lít/Cm">
+    <input class="input" name="t2_du" value="{form_data.get('t2_du','')}" placeholder="Dư Hóa Đơn">
 
-    <input name="t3_xe"value="{form_data.get('t3_xe','')}" placeholder="Barem" style="width:80px">
-    <input name="t3_ch"value="{form_data.get('t3_ch','')}" placeholder="CH Đo" style="width:80px">
-    <input name="h3"value="{form_data.get('h3','')}" placeholder="Lít/Cm" style="width:80px">
-    <input name="t3_du"value="{form_data.get('t3_du','')}" placeholder="Dư Hóa Đơn" style="width:85px">
-
-    <select name="fuel3">
-        <option value="a95" {"selected" if form_data.get("fuel3")=="a95" else ""}>A95</option>
-    <option value="do005" {"selected" if form_data.get("fuel3")=="do005" else ""}>DO 0.05</option>
-    <option value="do0001" {"selected" if form_data.get("fuel3")=="do0001" else ""}>DO 0.001</option>
+    <select class="input fuel-select" name="fuel2" onchange="doiMau(this)">
+        <option value="a95" {"selected" if form_data.get("fuel2")=="a95" else ""}>Xăng RON95</option>
+        <option value="do005" {"selected" if form_data.get("fuel2")=="do005" else ""}>DO 0.05S-II</option>
+        <option value="do0001" {"selected" if form_data.get("fuel2")=="do0001" else ""}>DO 0.001S-V</option>
     </select>
-
 </div>
 
-    <h3>Khoang 4</h3>
-    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
+<h2 class="section">🛢️ Khoang 3</h2>
+<div class="row">
+    <input class="input" name="t3_xe" value="{form_data.get('t3_xe','')}" placeholder="Barem">
+    <input class="input" name="t3_ch" value="{form_data.get('t3_ch','')}" placeholder="CH Đo">
+    <input class="input" name="h3" value="{form_data.get('h3','')}" placeholder="Lít/Cm">
+    <input class="input" name="t3_du" value="{form_data.get('t3_du','')}" placeholder="Dư Hóa Đơn">
 
-    <input name="t4_xe"value="{form_data.get('t4_xe','')}" placeholder="Barem" style="width:80px">
-    <input name="t4_ch"value="{form_data.get('t4_ch','')}" placeholder="CH Đo" style="width:80px">
-    <input name="h4"value="{form_data.get('h4','')}"placeholder="Lít/Cm" style="width:80px">
-    <input name="t4_du"value="{form_data.get('t4_du','')}" placeholder="Dư Hóa Đơn" style="width:85px">
-
-    <select name="fuel4">
-       <option value="a95" {"selected" if form_data.get("fuel4")=="a95" else ""}>A95</option>
-    <option value="do005" {"selected" if form_data.get("fuel4")=="do005" else ""}>DO 0.05</option>
-    <option value="do0001" {"selected" if form_data.get("fuel4")=="do0001" else ""}>DO 0.001</option>
+    <select class="input fuel-select" name="fuel3" onchange="doiMau(this)">
+        <option value="a95" {"selected" if form_data.get("fuel3")=="a95" else ""}>Xăng RON95</option>
+        <option value="do005" {"selected" if form_data.get("fuel3")=="do005" else ""}>DO 0.05S-II</option>
+        <option value="do0001" {"selected" if form_data.get("fuel3")=="do0001" else ""}>DO 0.001S-V</option>
     </select>
-
 </div>
-    <h3>Khoang 5</h3>
-    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:10px;">
 
-    <input name="t5_xe"value="{form_data.get('t5_xe','')}" placeholder="Barem" style="width:80px">
-    <input name="t5_ch"value="{form_data.get('t5_ch','')}" placeholder="CH Đo" style="width:80px">
-    <input name="h5"value="{form_data.get('h5','')}" placeholder="Lít/Cm" style="width:80px">
-    <input name="t5_du"value="{form_data.get('t5_du','')}" placeholder="Dư Hóa Đơn" style="width:85px">
+<h2 class="section">🛢️ Khoang 4</h2>
+<div class="row">
+    <input class="input" name="t4_xe" value="{form_data.get('t4_xe','')}" placeholder="Barem">
+    <input class="input" name="t4_ch" value="{form_data.get('t4_ch','')}" placeholder="CH Đo">
+    <input class="input" name="h4" value="{form_data.get('h4','')}" placeholder="Lít/Cm">
+    <input class="input" name="t4_du" value="{form_data.get('t4_du','')}" placeholder="Dư Hóa Đơn">
 
-    <select name="fuel5">
-        <option value="a95" {"selected" if form_data.get("fuel5")=="a95" else ""}>A95</option>
-    <option value="do005" {"selected" if form_data.get("fuel5")=="do005" else ""}>DO 0.05</option>
-    <option value="do0001" {"selected" if form_data.get("fuel5")=="do0001" else ""}>DO 0.001</option>
+    <select class="input fuel-select" name="fuel4" onchange="doiMau(this)">
+        <option value="a95" {"selected" if form_data.get("fuel4")=="a95" else ""}>Xăng RON95</option>
+        <option value="do005" {"selected" if form_data.get("fuel4")=="do005" else ""}>DO 0.05S-II</option>
+        <option value="do0001" {"selected" if form_data.get("fuel4")=="do0001" else ""}>DO 0.001S-V</option>
     </select>
-
 </div>
-    <h2 style="margin-top:5px;">📦 Số lượng hàng trên hóa đơn</h2>
-    <span style="color:red;">A95:</span><input name="sl_a95"value="{form_data.get('sl_a95','')}" style="width:20%;padding:4px;margin-bottom:4px;">
-    <span style="color:#00bfff;">DO 0.05:</span><input name="sl_do005"value="{form_data.get('sl_do005','')}"style="width:20%;padding:4px;margin-bottom:4px;">
-    <span style="color:#7CFC00;">DO 0.001:</span><input name="sl_do0001"value="{form_data.get('sl_do0001','')}"style="width:20%;padding:4px;margin-bottom:4px;">
 
-   <h2 style="margin-top:5px;">🌡️ Nhiệt độ trên hóa đơn</h2>
-    <span style="color:red;">A95:</span><input name="temp_hd_a95"value="{form_data.get('temp_hd_a95','')}"style="width:7%;padding:2px;margin-bottom:2px;">
-    <span style="color:#00bfff;">DO 0.05:</span><input name="temp_hd_do005"value="{form_data.get('temp_hd_do005','')}"style="width:7%;padding:2px;margin-bottom:2px;">
-    <span style="color:#7CFC00;">DO 0.001:</span><input name="temp_hd_do0001"value="{form_data.get('temp_hd_do0001','')}"style="width:7%;padding:2px;margin-bottom:2px;">
+<h2 class="section">🛢️ Khoang 5</h2>
+<div class="row">
+    <input class="input" name="t5_xe" value="{form_data.get('t5_xe','')}" placeholder="Barem">
+    <input class="input" name="t5_ch" value="{form_data.get('t5_ch','')}" placeholder="CH Đo">
+    <input class="input" name="h5" value="{form_data.get('h5','')}" placeholder="Lít/Cm">
+    <input class="input" name="t5_du" value="{form_data.get('t5_du','')}" placeholder="Dư Hóa Đơn">
 
-   <h2 style="margin-top:5px;">🌡️ Nhiệt độ đo tại cửa hàng </h2>
-    <span style="color:red;">A95:</span><input name="temp_ch_a95"value="{form_data.get('temp_ch_a95','')}"style="width:7%;padding:2px;margin-bottom:2px;">
-    <span style="color:#00bfff;">DO 0.05:</span><input name="temp_ch_do005"value="{form_data.get('temp_ch_do005','')}"style="width:7%;padding:2px;margin-bottom:2px;">
-    <span style="color:#7CFC00;">DO 0.001:</span><input name="temp_ch_do0001"value="{form_data.get('temp_ch_do0001','')}"style="width:7%;padding:2px;margin-bottom:2px;">
-    <h2 style="margin-top:5px;">🚚 Quãng đường vận chuyển (km)</h2>
-    <input name="distance" value="{form_data.get('distance','')}"placeholder="Nhập km"style="width:12%;padding:4px;margin-bottom:4px;"><br>
-    <button type="submit">Tính</button>
+    <select class="input fuel-select" name="fuel5" onchange="doiMau(this)">
+        <option value="a95" {"selected" if form_data.get("fuel5")=="a95" else ""}>Xăng RON95</option>
+        <option value="do005" {"selected" if form_data.get("fuel5")=="do005" else ""}>DO 0.05S-II</option>
+        <option value="do0001" {"selected" if form_data.get("fuel5")=="do0001" else ""}>DO 0.001S-V</option>
+    </select>
+</div>
 
-    </form>
-    
-    </div>
-    <div style="
-    background:#1c1c1c;
-    padding:20px;
-    border-radius:12px;
-    width:300px;
-    color:white;
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-    ">
-    {ket_qua_html}
-    </div>
-    
-    <br>
-    <a href="/" style="color:orange">← Trang chính</a>
-    <script>
-    function chonXe(xe) {{
-    const data = duLieuXe[xe];
-    if (!data) return;
+        <h2 class="section">📦 Số lượng hàng trên hóa đơn</h2>
+        <div class="row">
+            <label class="label a95">A95</label>
+            <input class="input" name="sl_a95" value="{form_data.get('sl_a95','')}">
 
-    for (let key in data) {{
-        let input = document.getElementsByName(key)[0];
-        if (input) input.value = data[key];
+            <label class="label do005">DO 0.05</label>
+            <input class="input" name="sl_do005" value="{form_data.get('sl_do005','')}">
+
+            <label class="label do0001">DO 0.001</label>
+            <input class="input" name="sl_do0001" value="{form_data.get('sl_do0001','')}">
+        </div>
+
+        <h2 class="section">🌡️ Nhiệt độ trên hóa đơn</h2>
+        <div class="row">
+            <label class="label a95">A95</label>
+            <input class="input" name="temp_hd_a95" value="{form_data.get('temp_hd_a95','')}">
+
+            <label class="label do005">DO 0.05</label>
+            <input class="input" name="temp_hd_do005" value="{form_data.get('temp_hd_do005','')}">
+
+            <label class="label do0001">DO 0.001</label>
+            <input class="input" name="temp_hd_do0001" value="{form_data.get('temp_hd_do0001','')}">
+        </div>
+
+        <h2 class="section">🌡️ Nhiệt độ đo tại cửa hàng</h2>
+        <div class="row">
+            <label class="label a95">A95</label>
+            <input class="input" name="temp_ch_a95" value="{form_data.get('temp_ch_a95','')}">
+
+            <label class="label do005">DO 0.05</label>
+            <input class="input" name="temp_ch_do005" value="{form_data.get('temp_ch_do005','')}">
+
+            <label class="label do0001">DO 0.001</label>
+            <input class="input" name="temp_ch_do0001" value="{form_data.get('temp_ch_do0001','')}">
+        </div>
+
+        <h2 class="section">🚚 Quãng đường vận chuyển (km)</h2>
+        <div class="row">
+            <input class="input" name="distance" value="{form_data.get('distance','')}" placeholder="Số Km">
+            <button class="btn">Tính</button>
+
+        </div>
+
+        </form>
+        </div>
+
+        <div class="result">
+        {ket_qua_html}
+        </div>
+
+        </div>
+
+        <a href="/" class="link">← Trang chính</a>
+        <script>
+        let du_lieu_xe = {du_lieu_xe_json};
+        </script>
+        <script>
+        function chonXe(ten) {{
+            let xe = du_lieu_xe[ten];
+            if (!xe) {{
+                return;
+                }}
+
+    document.getElementsByName("h1")[0].value = xe.h1;
+    document.getElementsByName("h2")[0].value = xe.h2;
+    document.getElementsByName("h3")[0].value = xe.h3;
+    document.getElementsByName("h4")[0].value = xe.h4;
+    document.getElementsByName("h5")[0].value = xe.h5;
+
+    document.getElementsByName("t1_xe")[0].value = xe.t1_xe;
+    document.getElementsByName("t2_xe")[0].value = xe.t2_xe;
+    document.getElementsByName("t3_xe")[0].value = xe.t3_xe;
+    document.getElementsByName("t4_xe")[0].value = xe.t4_xe;
+    document.getElementsByName("t5_xe")[0].value = xe.t5_xe;
+    document.getElementById("xoaLink").href = "/xoa-xe?ten_xe=" + ten;
+        }}
+        </script>
+     <script>
+function doiMau(el) {{
+    if (el.value === "a95") {{
+        el.style.borderColor = "#ff4d4d";
+        el.style.color = "#ff4d4d";
     }}
-
-    // 👉 cập nhật link xóa
-    document.getElementById("xoaLink").href = "/xoa-xe?ten=" + xe;
+    else if (el.value === "do005") {{
+        el.style.borderColor = "#00c6ff";
+        el.style.color = "#00c6ff";
     }}
-    
+    else {{
+        el.style.borderColor = "#00ff9d";
+        el.style.color = "#00ff9d";
+    }}
+}}
+</script>
+<script>
+window.onload = function() {{
+    document.querySelectorAll("select.input").forEach(el => {{
+        doiMau(el);
+        }});
+}}
+</script>
 
-    </script>
-    
-    </div>
-    </body>
-    </html>
+        </body>
+        </html>
     """
-@app.get("/xoa-xe", response_class=HTMLResponse)
-def xoa_xe(ten: str):
+from fastapi.responses import RedirectResponse
+
+@app.get("/xoa-xe")
+def xoa_xe(ten_xe: str):
     conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM xe WHERE ten_xe=%s", (ten,))
+    if "postgres" in str(type(conn)):
+        cursor.execute("DELETE FROM xe WHERE ten_xe=%s", (ten_xe,))
+    else:
+        cursor.execute("DELETE FROM xe WHERE ten_xe=?", (ten_xe,))
 
     conn.commit()
     conn.close()
 
-    return """
-    <html>
-    <head>
-    <meta http-equiv="refresh" content="1;url=/nhap-xe-tec">
-    </head>
-    <body style="background:#111;color:white;text-align:center;padding-top:80px;font-family:Arial">
-    <h1 style="color:red">🗑 Đã xóa xe!</h1>
-    <p>Đang quay lại...</p>
-    </body>
-    </html>
-    """
+    return RedirectResponse("/nhap-xe-tec", status_code=303)
+   
 @app.get("/them-xe", response_class=HTMLResponse)
 def form_them_xe():
     return """
@@ -1178,19 +1429,29 @@ def luu_xe(
     t1_xe: float = Form(0), t2_xe: float = Form(0), t3_xe: float = Form(0),
     t4_xe: float = Form(0), t5_xe: float = Form(0),
 ):
-    conn = conn = get_conn()
+    import os
+
+    conn = get_conn()
     cursor = conn.cursor()
 
-    cursor.execute("""
-    INSERT INTO xe VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    ON CONFLICT (ten_xe) DO NOTHING
-    """, (ten_xe, h1, h2, h3, h4, h5, t1_xe, t2_xe, t3_xe, t4_xe, t5_xe))
+    # 👇 AUTO chọn DB
+    if os.getenv("DATABASE_URL"):
+        # PostgreSQL (Render)
+        cursor.execute("""
+        INSERT INTO xe VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (ten_xe) DO NOTHING
+        """, (ten_xe, h1, h2, h3, h4, h5, t1_xe, t2_xe, t3_xe, t4_xe, t5_xe))
+
+    else:
+        # SQLite (local)
+        cursor.execute("""
+        INSERT OR IGNORE INTO xe VALUES (?,?,?,?,?,?,?,?,?,?,?)
+        """, (ten_xe, h1, h2, h3, h4, h5, t1_xe, t2_xe, t3_xe, t4_xe, t5_xe))
 
     conn.commit()
     conn.close()
 
     return """
-    
     <html>
     <head>
     <meta http-equiv="refresh" content="1;url=/nhap-xe-tec">
@@ -1321,62 +1582,63 @@ def san_pham():
             <p>Bình gas công nghiệp petrolimex 48kg</p>
         </div>
         <div class="item" onclick="moModal(
-  'https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58',
-  'PLC Komat SHD',
-  'PLC Komat SHD được pha chế từ nguyên liệu tinh chế và các phụ gia chọn lọc tạo thành các sản phẩm bôi trơn hoàn hảo, có tính chống gỉ tốt, giữ cho động cơ luôn sạch, không tạo bọt.',
-  'PLC Komat SHD được dùng cho động cơ xăng và diesel của ôtô, máy móc, thiết bị sử dụng nhiên liệu có hàm lượng lưu huỳnh thấp, hoạt động ở điều kiện tương đối cao. Loại dầu này đáp ứng tiêu chuẩn API: SC/CC và cấp MIL-L-2104B.'
-)">
-    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58">
-    <p>PLC Komat SHD</p>
-</div>
-<div class="item" onclick="moModal(
-  'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700',
-  'Dầu thủy lực Petrolimex PLC AW Hydroil 68',
-  'Dầu thủy lực PLC AW HYDROIL 68 được pha chế từ dầu gốc có chỉ số độ nhớt cao và các phụ gia chống oxy hóa, chống mài mòn, ăn mòn và chống tạo bọt, giúp bảo vệ hoàn hảo hệ thống thủy lực và các thiết bị sử dụng dầu',
-  'Ngày nay các sản phẩm dầu thủy lực PLC được ứng dụng rộng rãi trong hầu hết các ngành công nghiệp'
-)">
-    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700">
-    <p>Dầu thủy lực Petrolimex PLC AW Hydroil 68</p>
-</div>
-<div class="item" onclick="moModal(
-  'https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg',
-  'GEAR OIL MP 90 EP',
-  'PLC GEAR OIL MP là dầu hộp số được pha chế từ nguyên liệu có chất lượng cao, phù hợp với cấp chất lượng API: GL-4 và MIL-L-2105B',
-  'PLC Gear oil MP 90 EP là dầu hộp số đa năng với phụ gia EP cung cấp khả năng bôi trơn hoàn hảo cho các phương tiện giao thông trên xa lộ, các phương tiện nông nghiệp.'
-)">
-    <img src="https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg">
-    <p>GEAR OIL MP 90 EP</p>
-</div>
-<div class="item" onclick="moModal(
-  'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07',
-  'PLC Cater CI-4',
-  'Dầu đạt cấp độ nhớt SAE: 15W-40, đáp ứng các yêu cầu cấp chất lượng API: CI-4 đối với động cơ Diesel và cấp API: SL đối với động cơ xăng.',
-  'Phuy 209L, Xô 18L, Thùng 18L, 25L và Hộp 1L, 5L, 6L.'
-)">
-    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07">
-    <p>PLC Cater CI-4</p>
-</div>
-<div class="item" onclick="moModal(
-  'https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22',
-  'Dầu Phanh DOT3',
-  'Dầu phanh Castrol Brake Fluid DOT 3 (1 Lít) là sản phẩm cao cấp đến từ thương hiệu nổi tiếng Castrol, được thiết kế chuyên biệt cho hệ thống phanh thủy lực của ô tô và xe tải.',
-  'VHDP DOT3 sử dụng cho các hệ thống phanh và côn ly hợp lắp trên các xe ôtô hoạt động ở vùng nhiệt đới với cuppen do Việt Nam'
-)">
-    <img src="https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22">
-    <p>Dầu Phanh DOT3</p>
-</div>
-<div class="item" onclick="moModal(
-  'https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg',
-  'Phuy Nhựa',
-  'Thùng phuy nhựa được làm bằng polyetylen mật độ cao (HDPE) hoặc polypropylen (PP) có độ bền cao, chống ăn mòn hoá học',
-  'Thùng phuy nhựa 30l, 50l, 120l, 200l, 220l'
-)">
-    <img src="https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg">
-    <p>Phuy Nhựa </p>
-</div>
-        
+        'https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58',
+        'PLC Komat SHD',
+        'PLC Komat SHD được pha chế từ nguyên liệu tinh chế và các phụ gia chọn lọc tạo thành các sản phẩm bôi trơn hoàn hảo, có tính chống gỉ tốt, giữ cho động cơ luôn sạch, không tạo bọt.',
+        'PLC Komat SHD được dùng cho động cơ xăng và diesel của ôtô, máy móc, thiết bị sử dụng nhiên liệu có hàm lượng lưu huỳnh thấp, hoạt động ở điều kiện tương đối cao. Loại dầu này đáp ứng tiêu chuẩn API: SC/CC và cấp MIL-L-2104B.'
+        )">
+        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58">
+        <p>PLC Komat SHD</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700',
+          'Dầu thủy lực Petrolimex PLC AW Hydroil 68',
+          'Dầu thủy lực PLC AW HYDROIL 68 được pha chế từ dầu gốc có chỉ số độ nhớt cao và các phụ gia chống oxy hóa, chống mài mòn, ăn mòn và chống tạo bọt, giúp bảo vệ hoàn hảo hệ thống thủy lực và các thiết bị sử dụng dầu',
+          'Ngày nay các sản phẩm dầu thủy lực PLC được ứng dụng rộng rãi trong hầu hết các ngành công nghiệp'
+        )">
+            <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700">
+            <p>Dầu thủy lực Petrolimex PLC AW Hydroil 68</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg',
+          'GEAR OIL MP 90 EP',
+          'PLC GEAR OIL MP là dầu hộp số được pha chế từ nguyên liệu có chất lượng cao, phù hợp với cấp chất lượng API: GL-4 và MIL-L-2105B',
+          'PLC Gear oil MP 90 EP là dầu hộp số đa năng với phụ gia EP cung cấp khả năng bôi trơn hoàn hảo cho các phương tiện giao thông trên xa lộ, các phương tiện nông nghiệp.'
+        )">
+            <img src="https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg">
+            <p>GEAR OIL MP 90 EP</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07',
+          'PLC Cater CI-4',
+          'Dầu đạt cấp độ nhớt SAE: 15W-40, đáp ứng các yêu cầu cấp chất lượng API: CI-4 đối với động cơ Diesel và cấp API: SL đối với động cơ xăng.',
+          'Phuy 209L, Xô 18L, Thùng 18L, 25L và Hộp 1L, 5L, 6L.'
+        )">
+        <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07">
+        <p>PLC Cater CI-4</p>
+    </div>
+    <div class="item" onclick="moModal(
+      'https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22',
+      'Dầu Phanh DOT3',
+      'Dầu phanh Castrol Brake Fluid DOT 3 (1 Lít) là sản phẩm cao cấp đến từ thương hiệu nổi tiếng Castrol, được thiết kế chuyên biệt cho hệ thống phanh thủy lực của ô tô và xe tải.',
+      'VHDP DOT3 sử dụng cho các hệ thống phanh và côn ly hợp lắp trên các xe ôtô hoạt động ở vùng nhiệt đới với cuppen do Việt Nam'
+    )">
+        <img src="https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22">
+        <p>Dầu Phanh DOT3</p>
+    </div>
+    <div class="item" onclick="moModal(
+      'https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg',
+      'Phuy Nhựa',
+      'Thùng phuy nhựa được làm bằng polyetylen mật độ cao (HDPE) hoặc polypropylen (PP) có độ bền cao, chống ăn mòn hoá học',
+      'Thùng phuy nhựa 30l, 50l, 120l, 200l, 220l'
+    )">
+        <img src="https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg">
+        <p>Phuy Nhựa </p>
     </div>
 
+        
+    </div>
+    <a href="/" class="link">← Trang chính</a>
     <!-- MODAL -->
     <div id="modal" style="
       display:none;
