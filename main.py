@@ -460,6 +460,9 @@ import json
 def get_conn():
     url = os.getenv("DATABASE_URL")
     if not url:
+        import sqlite3
+        return sqlite3.connect("xe.db")
+    if not url:
         raise Exception("❌ DATABASE_URL chưa được set!")
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
@@ -572,6 +575,12 @@ def home():
         <div class="title">Quy đổi</div>
         <div class="desc">Chiều cao ↔ Thể tích</div>
     </a>
+    <a href="/san-pham" class="card">
+    <div class="icon">🛢️</div>
+    <div class="title">Chúng Tôi Có Gì?</div>
+    <div class="desc">Danh sách sản phẩm</div>
+    </a>
+    
 
     </body>
     </html>
@@ -679,7 +688,6 @@ def quy_doi():
         </form>
 
         <a href="/" class="back">← Trang chính</a>
-    </div>
 
     </body>
     </html>
@@ -1191,6 +1199,245 @@ def luu_xe(
 
     <h1 style="color:lime">✅ Đã lưu xe!</h1>
     <p>Đang quay lại...</p>
+
+    </body>
+    </html>
+    """
+from fastapi.responses import HTMLResponse
+
+@app.get("/san-pham", response_class=HTMLResponse)
+def san_pham():
+    return """
+    <html>
+    <head>
+    <style>
+                
+        body {
+            background: #0f2027;
+            font-family: Arial;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .item {
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .item img {
+            width: 120px;
+            height: 120px;          /* 🔥 quan trọng */
+            object-fit: contain;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            transition: 0.3s;
+        }
+
+        .item img:hover {
+            transform: scale(1.1);
+        }
+        .item p {
+        font-size: 13px;
+        margin-top: 8px;
+        }
+        .item p {
+        height: 35px;
+        overflow: hidden;
+        }
+        .item {
+        transition: 0.3s;
+        }
+
+        .item:hover {
+        transform: translateY(-5px);
+        }
+        .item img {
+        border: 1px solid rgba(255,255,255,0.2);
+        }
+        </style>
+    </head>
+
+    <body>
+
+    <h1>Sản Phẩm Được Bán Tại Các Đại Lý Petrolimex Trên Toàn Quốc</h1>
+
+    <div class="grid">
+
+        <div class="item" onclick="moModal(
+          'https://daunhotsongphat.vn/storage/uploads/products/ca3611cb7c94caa232425ef1428ac115-2115.jpeg',
+          'Dầu Racer SJ',
+          'Dầu nhớt xe máy Petrolimex',
+          'SAE 20W50 - API SJ - 800ml'
+        )">
+            <img src="https://daunhotsongphat.vn/storage/uploads/products/ca3611cb7c94caa232425ef1428ac115-2115.jpeg">
+            <p>Dầu Racer SJ</p>
+        </div>
+
+        <!-- thêm sản phẩm ở đây -->
+        <div class="item" onclick="moModal(
+          'https://daunhonpetrolimex.com/image/cache/catalog/plc%20racer%202t%201l-450x450.jpg',
+          'Race 2T',
+          'PLC Racer 2T là dầu động cơ xăng 2 thì được pha chế từ dầu gốc có chất lượng cao cùng với phụ gia chống mài mòn và dễ hòa trộn với xăng. ',
+          'Độ nhớt ở 100oC'
+        )">
+            <img src="https://daunhonpetrolimex.com/image/cache/catalog/plc%20racer%202t%201l-450x450.jpg">
+            <p>Racer 2T</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lm2s74cgr1zz23',
+          'PLC RACER SCOOTER MB',
+          'Dầu động cơ PLC RACER SCOOTER MB là dầu động cơ đa cấp cho xe máy tay ga cấp chất lượng cao nhất theo tiêu chuẩn JASO T904-2006. Dầu có chứa các loại phụ gia chống mài mòn, tẩy rửa tốt, chống tạo cặn với công nghệ tiên tiến nhất đem lại tính năng bảo vệ động cơ ở mức cao nhất, đáp ứng các tiêu chuẩn của nhà chế tạo động cơ. ',
+          'có tại petrolimex-cửa hàng 29 ,xã Bình Gia , Lạng Sơn'
+        )">
+            <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lm2s74cgr1zz23">
+            <p>PLC RACER SCOOTER MB</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://cdn0597.cdn4s.com/media/san-pham/b%C3%ACnh%20gas/binh-gas-petrolimex-12kg-gas-petrolimex-chinh-hang.jpg',
+          'Bình gas Petrolimex 12kg',
+          'Hãng sản xuất:Công ty cổ phần Gas Petrolimex (Petrolimex Gas) Trọng lượng: 12 Kg Màu bình: Màu Xanh ',
+          'Tiêu chuẩn chất lượng: Vỏ bình gas sản xuất theo tiêu chuẩn DOT-4BA-240, DOT-4BW-240 và TCVN 6292-1997'
+        )">
+            <img src="https://cdn0597.cdn4s.com/media/san-pham/b%C3%ACnh%20gas/binh-gas-petrolimex-12kg-gas-petrolimex-chinh-hang.jpg">
+            <p>Bình gas Petrolimex 12kg</p>
+        </div>
+        <div class="item" onclick="moModal(
+          'https://cdn1288.cdn4s2.com/media/san_pham/binh-gas-petrolimex-48kg.jpg',
+          'Bình gas công nghiệp petrolimex 48kg',
+          'Đối với những gia đình có nhu cầu sử dụng ga vừa phải thì chỉ cần một chiếc bình gas 12kg là phù hợp. Còn những bếp ăn có công suất lớn, nhu cầu sử dụng nhiều, phục vụ nhiều người và cần nhanh nhạy thì bình gas công nghiệp 48kg lại là lựa chọn lý tưởng.',
+          'Đặc điểm của bình là có màu xanh ngọc, thiết kế thon dài, khối lượng ga trong bình là 48kg, trọng lượng vỏ đạt khoảng 37 – 40kg.'
+        )">
+            <img src="https://cdn1288.cdn4s2.com/media/san_pham/binh-gas-petrolimex-48kg.jpg">
+            <p>Bình gas công nghiệp petrolimex 48kg</p>
+        </div>
+        <div class="item" onclick="moModal(
+  'https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58',
+  'PLC Komat SHD',
+  'PLC Komat SHD được pha chế từ nguyên liệu tinh chế và các phụ gia chọn lọc tạo thành các sản phẩm bôi trơn hoàn hảo, có tính chống gỉ tốt, giữ cho động cơ luôn sạch, không tạo bọt.',
+  'PLC Komat SHD được dùng cho động cơ xăng và diesel của ôtô, máy móc, thiết bị sử dụng nhiên liệu có hàm lượng lưu huỳnh thấp, hoạt động ở điều kiện tương đối cao. Loại dầu này đáp ứng tiêu chuẩn API: SC/CC và cấp MIL-L-2104B.'
+)">
+    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-lva6ptuyzlus58">
+    <p>PLC Komat SHD</p>
+</div>
+<div class="item" onclick="moModal(
+  'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700',
+  'Dầu thủy lực Petrolimex PLC AW Hydroil 68',
+  'Dầu thủy lực PLC AW HYDROIL 68 được pha chế từ dầu gốc có chỉ số độ nhớt cao và các phụ gia chống oxy hóa, chống mài mòn, ăn mòn và chống tạo bọt, giúp bảo vệ hoàn hảo hệ thống thủy lực và các thiết bị sử dụng dầu',
+  'Ngày nay các sản phẩm dầu thủy lực PLC được ứng dụng rộng rãi trong hầu hết các ngành công nghiệp'
+)">
+    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0lry6cygya700">
+    <p>Dầu thủy lực Petrolimex PLC AW Hydroil 68</p>
+</div>
+<div class="item" onclick="moModal(
+  'https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg',
+  'GEAR OIL MP 90 EP',
+  'PLC GEAR OIL MP là dầu hộp số được pha chế từ nguyên liệu có chất lượng cao, phù hợp với cấp chất lượng API: GL-4 và MIL-L-2105B',
+  'PLC Gear oil MP 90 EP là dầu hộp số đa năng với phụ gia EP cung cấp khả năng bôi trơn hoàn hảo cho các phương tiện giao thông trên xa lộ, các phương tiện nông nghiệp.'
+)">
+    <img src="https://xangdauvanduc.com/wp-content/uploads/2025/07/plc-gear-oil-mp-90-ep-thung-18l-scaled.jpg">
+    <p>GEAR OIL MP 90 EP</p>
+</div>
+<div class="item" onclick="moModal(
+  'https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07',
+  'PLC Cater CI-4',
+  'Dầu đạt cấp độ nhớt SAE: 15W-40, đáp ứng các yêu cầu cấp chất lượng API: CI-4 đối với động cơ Diesel và cấp API: SL đối với động cơ xăng.',
+  'Phuy 209L, Xô 18L, Thùng 18L, 25L và Hộp 1L, 5L, 6L.'
+)">
+    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7ras8-m0mroh4q499p07">
+    <p>PLC Cater CI-4</p>
+</div>
+<div class="item" onclick="moModal(
+  'https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22',
+  'Dầu Phanh DOT3',
+  'Dầu phanh Castrol Brake Fluid DOT 3 (1 Lít) là sản phẩm cao cấp đến từ thương hiệu nổi tiếng Castrol, được thiết kế chuyên biệt cho hệ thống phanh thủy lực của ô tô và xe tải.',
+  'VHDP DOT3 sử dụng cho các hệ thống phanh và côn ly hợp lắp trên các xe ôtô hoạt động ở vùng nhiệt đới với cuppen do Việt Nam'
+)">
+    <img src="https://down-vn.img.susercontent.com/file/8f8687121b92feb2262279f5db9c4e22">
+    <p>Dầu Phanh DOT3</p>
+</div>
+<div class="item" onclick="moModal(
+  'https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg',
+  'Phuy Nhựa',
+  'Thùng phuy nhựa được làm bằng polyetylen mật độ cao (HDPE) hoặc polypropylen (PP) có độ bền cao, chống ăn mòn hoá học',
+  'Thùng phuy nhựa 30l, 50l, 120l, 200l, 220l'
+)">
+    <img src="https://nhuanhatminh.vn/wp-content/uploads/2022/07/kich-thuoc-thung-phi-nhua-1.jpg">
+    <p>Phuy Nhựa </p>
+</div>
+        
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" style="
+      display:none;
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.8);
+      justify-content:center;
+      align-items:center;
+    " onclick="dongModal()">
+
+      <div onclick="event.stopPropagation()" style="
+        background:white;
+        padding:20px;
+        border-radius:15px;
+        display:flex;
+        gap:20px;
+        align-items:center;
+        max-width:700px;
+      ">
+
+        <img id="modal_img" style="
+          width:250px;
+          border-radius:10px;
+        ">
+
+        <div style="text-align:left; color:black">
+
+          <h2 id="modal_ten"></h2>
+
+          <p id="modal_mota"></p>
+
+          <p id="modal_thongso" style="font-weight:bold;"></p>
+
+          <button onclick="dongModal()" style="
+            padding:8px 20px;
+            border:none;
+            border-radius:8px;
+            background:#333;
+            color:white;
+            cursor:pointer;
+          ">Đóng</button>
+
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+    function moModal(img, ten, mota, thongso) {
+      document.getElementById("modal").style.display = "flex";
+      document.getElementById("modal_img").src = img;
+      document.getElementById("modal_ten").innerText = ten;
+      document.getElementById("modal_mota").innerText = mota;
+      document.getElementById("modal_thongso").innerText = thongso;
+    }
+
+    function dongModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+    </script>
 
     </body>
     </html>
