@@ -505,157 +505,169 @@ def v_to_h(v, table):
         if v1 <= v <= v2:
             return h1 + (v - v1)*(h2 - h1)/(v2 - v1)
     return None
+app = FastAPI()
+
+from fastapi.staticfiles import StaticFiles
+app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 def home():
     return """
     <html>
-    <head>
+<head>
+    <title>Quản lý xăng dầu</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
+
     <style>
         body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+           margin: 0;
     font-family: Arial;
-    color: white;
+    color: #222;
     text-align: center;
     padding-top: 80px;
-}
 
-/* title xịn hơn */
-/*h1 {
-    font-size: 42px;
-    margin-bottom: 40px;
-    background: linear-gradient(45deg, #00eaff, #00ff9d);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}*/
+    background: linear-gradient(135deg, #f5f7fa, #e4e7eb);  
+        }
 
-/* card nâng cấp */
-.card {
-    display: inline-block;
-    width: 230px;
-    padding: 30px;
-    margin: 20px;
-    border-radius: 20px;
+        /* ===== HEADER ===== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
 
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
+            background: linear-gradient(90deg, #0f2027, #203a43);
+            color: white;
 
-    text-decoration: none;
-    color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
-    transition: 0.3s;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
-}
+            padding: 0 40px;
+            box-sizing: border-box;
+            z-index: 1000;
 
-/* hover xịn hơn */
-.card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 0 30px #00eaff;
-}
+            overflow: hidden;
+        }
 
-/* icon to hơn */
-.icon {
-    font-size: 50px;
-    margin-bottom: 15px;
-}
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-/* title */
-.title {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
+        .logo-group img {
+            height: 35px;
+            border-radius: 6px;
+        }
 
-/* desc */
-.desc {
-    font-size: 14px;
-    opacity: 0.7;
-}
-/* ánh sáng nền */
-/*body::before {
-    content: "";
-    position: fixed;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(0,255,200,0.2), transparent);
-    top: -200px;
-    left: -200px;
-    z-index: -1;
-}
+        .logo-text {
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-body::after {
-    content: "";
-    position: fixed;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(0,150,255,0.2), transparent);
-    bottom: -200px;
-    right: -200px;
-    z-index: -1;
-}*/
+        .menu a {
+            margin-left: 25px;
+            color: white;
+            text-decoration: none;
+        }
 
-/* ánh sáng chạy trên card */
-.card {
-    position: relative;
-    overflow: hidden;
-}
+        .menu a:hover {
+            color: #00eaff;
+        }
 
-.card::before {
-    content: "";
-    position: absolute;
+        /* ===== TRUCK ===== */
+        .truck {
+            position: absolute;
+            top: 18px;
+            left: 200px;
+            font-size: 14px;
+            opacity: 0.7;
+
+            animation: moveTruck 12s linear infinite alternate;
+        }
+
+        @keyframes moveTruck {
+            0% {
+                left: 250px;
+            }
+            100% {
+                left: calc(100% - 620px);
+            }
+        }
+/* ===== BANNER BODY ===== */
+.banner {
     width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
-    top: 0;
-    left: -100%;
-    transition: 0.5s;
+    height: 350px;
+
+    background: url('/static/banne.png') no-repeat center center;
+    background-size:contain;   /* QUAN TRỌNG */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
 }
 
-.card:hover::before {
-    left: 100%;
-}
 
-/* icon động */
-.card:hover .icon {
-    transform: scale(1.2) rotate(5deg);
-    transition: 0.3s;
-}
-.link-btn {
-    display: block;
+
+/* nội dung */
+.banner-content {
+    position: relative;
+    color: white;
     text-align: center;
-    margin-top: 40px;
-    color: orange;
-    font-size: 18px;
-    text-decoration: none;
 }
+
+.banner-content h1 {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.banner-content p {
+    opacity: 0.9;
+}
+
     </style>
-    </head>
+</head>
 
-    <body>
+<body>
 
-    <h1>🚀 Hệ thống quản lý xăng dầu</h1>
+<!-- HEADER -->
+<div class="header">
 
-    <a href="/nhap-xe-tec" class="card">
-        <div class="icon">🚛</div>
-        <div class="title">Nhập xe téc</div>
-        <div class="desc">Quản lý & tính toán xe nhập</div>
-    </a>
+    <div class="logo-group">
+        <img src="/static/logo.png">
+        <div class="logo-text">Quản lý xăng dầu</div>
+    </div>
 
-    <a href="/quy-doi" class="card">
-        <div class="icon">⛽</div>
-        <div class="title">Quy đổi</div>
-        <div class="desc">Chiều cao ↔ Thể tích</div>
-    </a>
-    <a href="/san-pham" class="card">
-    <div class="icon">🛢️</div>
-    <div class="title">Chúng Tôi Có Gì?</div>
-    <div class="desc">Danh sách sản phẩm</div>
-    </a>
-    <a href="/developer" class="link-btn">
-    Developed by →
-    </a>
-    
+    <div class="truck">Petrolimex - Lạng Sơn-Cửa Hàng 29</div>
 
-    </body>
-    </html>
+    <div class="menu">
+        <a href="/">Trang chủ</a>
+        <a href="/nhap-xe-tec">Nhập xe</a>
+        <a href="/quy-doi">Quy đổi</a>
+        <a href="/san-pham">Sản phẩm</a>
+    </div>
+
+</div>
+
+<!-- CONTENT -->
+<img src="/static/banner.png" class="banner-img">
+<div class="banner">
+    <div class="banner-content">
+       
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+    © 2026 - Quản lý xăng dầu | Version 1.0 <br>
+    Developed by <a href="/developer" style="color:orange">Hai Dinh</a> | 27/04/2026
+</div>
+
+</body>
+</html>
     """
 
 
@@ -670,7 +682,14 @@ def quy_doi():
     return """
     <html>
     <head>
+     <title>Quy Đổi Barem Bể</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
     <style>
+    
+
+
+
+
         body {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             font-family: Arial;
@@ -749,10 +768,14 @@ def quy_doi():
             color: rgba(255,255,255,0.7);
             font-style: italic;
         }
+        body {
+    padding-top: 80px;
+}
     </style>
     </head>
 
     <body>
+    
 
     <div class="card">
 
@@ -1018,6 +1041,8 @@ async def xe_tec(request: Request):
     return f"""
     <html>
     <head>
+     <title>Nhập xe xi-téc</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
     <style>
     body {{
         background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -1429,6 +1454,7 @@ def xoa_xe(ten_xe: str):
 def form_them_xe():
     return """
     <html>
+     <title>Thêm Xe</title>
     <body style="background:#111;color:white;text-align:center;padding-top:40px;font-family:Arial">
 
     <h1>➕ Thêm xe</h1>
@@ -1510,6 +1536,8 @@ def san_pham():
     return """
     <html>
     <head>
+     <title>Sản Phẩm</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
     <style>
                 
         body {
@@ -1749,6 +1777,8 @@ from fastapi.responses import HTMLResponse
 def developer():
     return """
     <html>
+     <title>Nhà phát triển</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
     <body style="background:black;color:white;text-align:center;padding-top:80px;font-family:Arial">
 
     <h1>👨‍💻 Developed by</h1>
