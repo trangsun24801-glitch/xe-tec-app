@@ -645,7 +645,7 @@ def home():
 
     <div class="menu">
         <a href="/">Trang chủ</a>
-        <a href="/nhap-xe-tec">Nhập xe</a>
+        <a href="/nhap-xe-tec">Nhập hàng</a>
         <a href="/quy-doi">Quy đổi</a>
         <a href="/san-pham">Sản phẩm</a>
     </div>
