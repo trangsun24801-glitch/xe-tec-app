@@ -1041,7 +1041,12 @@ async def xe_tec(request: Request):
     return f"""
     <html>
     <head>
-     <title>Nhập xe xi-téc</title>
+     <title>Nhập xe téc xăng dầu - Quản lý xe bồn xăng dầu</title>
+
+    <meta name="description" content="Công cụ nhập xe téc xăng dầu, quản lý khoang, số lượng và nhiệt độ xăng dầu nhanh chóng và chính xác">
+
+    <meta name="keywords" content="nhập xe téc xăng dầu, quản lý xe bồn, tính xăng dầu, khoang xe téc">
+
     <link rel="icon" type="image/png" href="/static/favicon.png?v=1">
     <style>
     body {{
@@ -1231,6 +1236,7 @@ select option {{
 }}
             </style>
             </head>
+            
 
             <body>
 
