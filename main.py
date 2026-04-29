@@ -1771,7 +1771,7 @@ def san_pham():
     </body>
     </html>
     """
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 
 @app.get("/developer", response_class=HTMLResponse)
 def developer():
@@ -1793,6 +1793,11 @@ def developer():
     </body>
     </html>
     """
+
+
+@app.get("/google7863a436bd2c6759.html")
+def verify():
+    return FileResponse("google7863a436bd2c6759.html")
 
 
 
