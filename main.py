@@ -459,13 +459,16 @@ import json
 
 def get_conn():
     url = os.getenv("DATABASE_URL")
+
+    # LOCAL
     if not url:
         import sqlite3
         return sqlite3.connect("xe.db")
-    if not url:
-        raise Exception("❌ DATABASE_URL chưa được set!")
+
+    # RENDER
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
+
     return psycopg2.connect(url)
 
 
@@ -580,8 +583,8 @@ def home():
         .truck {
             position: absolute;
             top: 18px;
-            left: 200px;
-            font-size: 14px;
+            left: 50px;
+            font-size: 20px;
             opacity: 0.7;
 
             animation: moveTruck 12s linear infinite alternate;
@@ -592,7 +595,7 @@ def home():
                 left: 250px;
             }
             100% {
-                left: calc(100% - 620px);
+                left: calc(100% - 630px);
             }
         }
 /* ===== BANNER BODY ===== */
@@ -641,13 +644,14 @@ def home():
         <div class="logo-text">Quản lý xăng dầu</div>
     </div>
 
-    <div class="truck">Petrolimex - Lạng Sơn-Cửa Hàng 29</div>
+    <div class="truck">Petrolimex - Lạng Sơn</div>
 
     <div class="menu">
         <a href="/">Trang chủ</a>
         <a href="/nhap-xe-tec">Nhập hàng</a>
         <a href="/quy-doi">Quy đổi</a>
         <a href="/san-pham">Sản phẩm</a>
+        <a href="/gia-xang">Giá xăng</a>
     </div>
 
 </div>
@@ -1807,6 +1811,104 @@ def verify():
 @app.get("/sitemap.xml")
 def sitemap():
     return FileResponse("sitemap.xml")
+from fastapi.responses import HTMLResponse
+import sqlite3
+
+@app.get("/gia-xang", response_class=HTMLResponse)
+def gia_xang():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT name, vung1, vung2 
+        FROM gia_xang
+    """)
+
+    rows = cur.fetchall()
+    conn.close()
+
+    if not rows:
+        return "<h2>❌ Chưa có dữ liệu</h2>"
+
+    rows_html = ""
+
+    for r in rows:
+        rows_html += f"""
+        <tr>
+            <td>{r[0]}</td>
+            <td>{r[1]}</td>
+            <td>{r[2]}</td>
+        </tr>
+        """
+
+    return f"""
+    <html>
+    <head>
+    <style>
+    body {{
+        background: #1f3a40;
+        font-family: Arial;
+        color: white;
+        text-align: center;
+        padding-top: 40px;
+    }}
+
+    table {{
+        margin: auto;
+        border-collapse: collapse;
+        width: 60%;
+        background: #2c4e57;
+    }}
+
+    th, td {{
+        padding: 12px;
+        border-bottom: 1px solid #444;
+    }}
+
+    th {{
+        background: #333;
+    }}
+
+    td {{
+        color: #00ffd5;
+        font-weight: bold;
+    }}
+    </style>
+    </head>
+
+    <body>
+
+    <h1>⛽ Giá xăng dầu hôm nay</h1>
+
+    <table>
+    <tr>
+        <th>Sản phẩm</th>
+        <th>Vùng 1</th>
+        <th>Vùng 2</th>
+    </tr>
+
+    {rows_html}
+
+    </table>
+
+    <br>
+    <a href="/">← Trang chính</a>
+    <a href="/update-gia" style="color:orange;">🔄 Cập nhật giá</a>
+
+    </body>
+    </html>
+    """
+from get_price import lay_gia_xang, save_price
+
+@app.get("/update-gia")
+def update_gia():
+    data = lay_gia_xang()
+
+    if not data:
+        return "❌ Không lấy được dữ liệu"
+
+    save_price(data)
+    return "✅ Đã cập nhật giá xăng"
 
 
 
