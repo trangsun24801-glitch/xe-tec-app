@@ -1798,6 +1798,9 @@ def developer():
 @app.get("/google7863a436bd2c6759.html")
 def verify():
     return FileResponse("google7863a436bd2c6759.html")
+@app.get("/sitemap.xml")
+def sitemap():
+    return FileResponse("sitemap.xml")
 
 
 
